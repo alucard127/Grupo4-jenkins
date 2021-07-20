@@ -1,0 +1,1319 @@
+{
+	"info": {
+		"_postman_id": "85cbe0c5-be40-485c-9a32-6530f2b41a40",
+		"name": "DH-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "UserAPIMethods",
+			"item": [
+				{
+					"name": "CreateUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"UserId\", jsonData.Id);\r",
+									"postman.setEnvironmentVariable(\"EmailUser\", jsonData.Email);\r",
+									"//postman.setCollectionVariable(\"Email\", jsonData.Email);\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 201){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account already exists\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account with this email address already exists\");\r",
+									"        });\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 202){\r",
+									"    //if the pass is incorrect\r",
+									"        pm.test(\"Password too short\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Password too short\");\r",
+									"        });\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 302){\r",
+									"    //if the account Invalid input Data whent the FullName is too long\r",
+									"        pm.test(\"Invalid input Data\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Invalid input Data\");\r",
+									"        });\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 307){\r",
+									"    //if the account Invalid input Data whent the FullName is too long\r",
+									"        pm.test(\"Invalid input Data\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Invalid Email Address\");\r",
+									"        });\r",
+									"    };\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"\r",
+									"if (responseBody.has(\"ErrorCode\") == false) {\r",
+									"\r",
+									"    pm.test(\"properties\", function () {\r",
+									"        pm.response.json();\r",
+									"        pm.expect(response.Id).to.be.a(\"Number\");\r",
+									"        pm.expect(response.Email).to.be.a(\"String\");\r",
+									"        pm.expect(response.Password).to.be.eql(null);\r",
+									"        pm.expect(response.FullName).to.be.a(\"String\");\r",
+									"    });\r",
+									"    pm.test(\"includes\", function () {\r",
+									"        pm.expect(pm.response.text()).to.include(\"Id\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"Email\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"Password\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"FullName\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"TimeZone\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"IsProUser\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"DefaultProjectId\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"AddItemMoreExpanded\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"EditDueDateMoreExpanded\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"ListSortType\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"FirstDayOfWeek\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"NewTaskDueDate\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"TimeZoneId\");\r",
+									"\r",
+									"\r",
+									"    });\r",
+									"    pm.test(\"be the same email\", function () {\r",
+									"        pm.expect(pm.response.json().Email).to.eql(postman.getEnvironmentVariable(\"EmailUser\"));\r",
+									"    });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"account created correctly!\", function () {\r",
+									"        pm.response.to.be.ok;\r",
+									"    });\r",
+									"    if( pm.variables.get(\"Password\").length < 6){\r",
+									"    //if the pass is too short\r",
+									"        pm.test(\"pass is too short acount shouldnt be create\", function () {\r",
+									"            pm.expect(pm.variables.get(\"Password\")).to.have.length.greaterThan(5);\r",
+									"            console.log(\"Error code should be 202\");\r",
+									"        });\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"            pm.expect(pm.response.code).to.be.eql(202);\r",
+									"         });\r",
+									"    };\r",
+									"\r",
+									"};\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Email\": \"{{Email}}\",\r\n    \"FullName\": \"Marcia de los angeles\",\r\n    \"Password\": \"{{Password}}\"\r\n \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200,201,204]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"        pm.expect(response.Id).to.be.a(\"Number\");\r",
+									"        pm.expect(response.Email).to.be.a(\"String\");\r",
+									"        pm.expect(response.Password).to.be.eql(null);\r",
+									"        pm.expect(response.FullName).to.be.a(\"String\");\r",
+									"    });\r",
+									"    \r",
+									"    pm.test(\"email correctly\", function(){\r",
+									"        pm.expect(pm.response.json().Email).to.eql(postman.getEnvironmentVariable(\"EmailUser\"));\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableUrlEncoding": false
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 201){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account already exists\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account with this email address already exists\");\r",
+									"        });\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 202){\r",
+									"    //if the pass is incorrect\r",
+									"        pm.test(\"Password too short\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Password too short\");\r",
+									"        });\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 302){\r",
+									"    //if the account Invalid input Data whent the FullName is too long\r",
+									"        pm.test(\"Invalid input Data\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Invalid input Data\");\r",
+									"        });\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"\r",
+									"if (responseBody.has(\"ErrorCode\") == false) {\r",
+									"\r",
+									"    pm.test(\"properties\", function () {\r",
+									"        pm.response.json();\r",
+									"        pm.expect(response.Id).to.be.a(\"Number\");\r",
+									"        pm.expect(response.Email).to.be.a(\"String\");\r",
+									"        pm.expect(response.Password).to.be.eql(null);\r",
+									"        pm.expect(response.FullName).to.be.a(\"String\");\r",
+									"    });\r",
+									"    pm.test(\"includes\", function () {\r",
+									"        pm.expect(pm.response.text()).to.include(\"Id\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"Email\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"Password\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"FullName\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"TimeZone\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"IsProUser\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"DefaultProjectId\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"AddItemMoreExpanded\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"EditDueDateMoreExpanded\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"ListSortType\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"FirstDayOfWeek\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"NewTaskDueDate\");\r",
+									"        pm.expect(pm.response.text()).to.include(\"TimeZoneId\");\r",
+									"\r",
+									"\r",
+									"    });\r",
+									"    pm.test(\"be the same email\", function () {\r",
+									"        pm.expect(pm.response.json().Email).to.eql(postman.getEnvironmentVariable(\"EmailUser\"));\r",
+									"    });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"account update correctly!\", function () {\r",
+									"        pm.response.to.be.ok;\r",
+									"    });\r",
+									"    if( pm.variables.get(\"Password\").length < 6){\r",
+									"    //if the pass is too short\r",
+									"        pm.test(\"pass is too short acount shouldnt be update\", function () {\r",
+									"            pm.expect(pm.variables.get(\"Password\")).to.have.length.greaterThan(5);\r",
+									"            console.log(\"Error code should be 202\");\r",
+									"        });\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"            pm.expect(pm.response.code).to.be.eql(202);\r",
+									"         });\r",
+									"    };\r",
+									"\r",
+									"};\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"FullName\": \"Joee perez\",\r\n    \"Password\": \"aaaaaa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/0.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"0.json"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ProjectsAPIMethods",
+			"item": [
+				{
+					"name": "GetAllProjects",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/projects.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"projects.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateProject",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"ProjectId\", jsonData.Id);\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 305){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Too Short Project Name\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Too Short Project Name\");\r",
+									"        });\r",
+									"        };\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully created!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"    });\r",
+									"    if( (pm.response.json().Content).length < 3){\r",
+									"    //if the pass is too short\r",
+									"        pm.test(\"Content name is too short\", function () {\r",
+									"            pm.expect(pm.response.Content).to.have.length.greaterThan(3);\r",
+									"            console.log(\"Error code should be 305\");\r",
+									"        });\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"            pm.expect(pm.response.code).to.be.eql(305);\r",
+									"         });\r",
+									"    };\r",
+									"\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"Content\": \"a\",\r\n        \"Icon\": 5,\r\n        \"Collapsed\": true,\r\n        \"ItemOrder\": 2,\r\n        \"Deleted\": true\r\n    }\r\n\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/projects.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"projects.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetProjectByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"\r",
+									"/*pm.test(\"projects found correctly!\", function () {\r",
+									"        pm.response.to.be.ok;\r",
+									"    });*/\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 402){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"don't have access to this Project check the Id item\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"You don't have access to this Project\");\r",
+									"        });\r",
+									"\r",
+									"        };\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/projects/3933236.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"projects",
+								"3933236.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateProjectByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 305){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Too Short Project Name\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Too Short Project Name\");\r",
+									"        });\r",
+									"        };\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully Update!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"    });\r",
+									"    if( (pm.response.json().Content).length < 3){\r",
+									"    //if the pass is too short\r",
+									"        pm.test(\"Content name is too short\", function () {\r",
+									"            pm.expect(pm.response.Content).to.have.length.greaterThan(3);\r",
+									"            console.log(\"Error code should be 305\");\r",
+									"        });\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"            pm.expect(pm.response.code).to.be.eql(305);\r",
+									"         });\r",
+									"    };\r",
+									"\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"Content\": \"hi\",\r\n   \"Icon\": \"5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/projects/{{ProjectId}}.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"projects",
+								"{{ProjectId}}.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteProjectByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 301){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Invalid Id\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Invalid Id\");\r",
+									"        });\r",
+									"\r",
+									"        };\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully Deleted!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/projects/{{ProjectId}}.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"projects",
+								"{{ProjectId}}.json"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "FiltersAPIMethods",
+			"item": [
+				{
+					"name": "GetListOfFilters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/filters.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"filters.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFilterByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/filters/0.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"filters",
+								"0.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetItemsOfaFilter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/filters/0/items.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"filters",
+								"0",
+								"items.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDoneItemsOfaFilter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response= pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"\r",
+									"    pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully found!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/filters/-1/doneitems.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"filters",
+								"-1",
+								"doneitems.json"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ItemsAPIMethods",
+			"item": [
+				{
+					"name": "CreateNewItem",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"ItemId\", jsonData.Id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"Content\": \"New Item\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/items.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"items.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllItems",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/items.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"items.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetItemByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/items/{{ItemId}}.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"items",
+								"{{ItemId}}.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateItemByID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"Content\": \"Updated Item\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/items/{{ItemId}}.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"items",
+								"{{ItemId}}.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteItemByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== true){\r",
+									"    if(pm.response.json().ErrorCode == 105){\r",
+									"    //if the account doesnt exist with a specific email on auth\r",
+									"        pm.test(\"Account doesnt exist\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+									"        });\r",
+									"    }\r",
+									"    else{\r",
+									"        if(pm.response.json().ErrorCode == 102){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Not Authenticated\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+									"        });\r",
+									"        };\r",
+									"    };\r",
+									"    if(pm.response.json().ErrorCode == 301){\r",
+									"        //if the pass is incorrect\r",
+									"        pm.test(\"Invalid Id\", function (){\r",
+									"        pm.expect(response.ErrorMessage).to.be.eql(\"Invalid Id\");\r",
+									"        });\r",
+									"\r",
+									"        };\r",
+									"        pm.test(\"status codes should be equals\", function (){\r",
+									"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"\r",
+									"\r",
+									"if(responseBody.has(\"ErrorCode\")== false){\r",
+									"    pm.test(\"successfully Deleted!\", function (){\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"    });\r",
+									"    pm.test(\"properties correctly\", function(){\r",
+									"        pm.response.json();\r",
+									"\r",
+									"    });\r",
+									"};"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/items/{{ItemId}}.json",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"items",
+								"{{ItemId}}.json"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "DeleteUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response= pm.response.json();\r",
+							"\r",
+							"if(responseBody.has(\"ErrorCode\")== true){\r",
+							"    if(pm.response.json().ErrorCode == 105){\r",
+							"    //if the account doesnt exist with a specific email on auth\r",
+							"        pm.test(\"Account doesnt exist\", function (){\r",
+							"        pm.expect(response.ErrorMessage).to.be.eql(\"Account doesn't exist\");\r",
+							"        });\r",
+							"    }\r",
+							"    else{\r",
+							"        if(pm.response.json().ErrorCode == 102){\r",
+							"        //if the pass is incorrect\r",
+							"        pm.test(\"Not Authenticated\", function (){\r",
+							"        pm.expect(response.ErrorMessage).to.be.eql(\"Not Authenticated\");\r",
+							"        });\r",
+							"        };\r",
+							"    };\r",
+							"\r",
+							"    pm.test(\"status codes should be equals\", function (){\r",
+							"        pm.expect(response.ErrorCode).to.be.eql(pm.response.code);\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"if(responseBody.has(\"ErrorCode\")== false){\r",
+							"    pm.test(\"successfully removed!\", function (){\r",
+							"        pm.expect(pm.response.code).to.be.oneOf([200,202,204]);\r",
+							"    });\r",
+							"    pm.test(\"properties correctly\", function(){\r",
+							"        pm.response.json();\r",
+							"        pm.expect(response.Id).to.be.a(\"Number\");\r",
+							"        pm.expect(response.Email).to.be.a(\"String\");\r",
+							"        pm.expect(response.Password).to.be.eql(null);\r",
+							"        pm.expect(response.FullName).to.be.a(\"String\");\r",
+							"    });\r",
+							"    \r",
+							"    pm.test(\"email correctly\", function(){\r",
+							"        pm.expect(pm.response.json().Email).to.eql(postman.getEnvironmentVariable(\"EmailUser\"));\r",
+							"    });\r",
+							"\r",
+							"};"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/user/0.json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user",
+						"0.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{Password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{Email}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Email",
+			"value": "usuriariog2@gmail.com"
+		},
+		{
+			"key": "FullName",
+			"value": "Marcia de los angeles Romina florez"
+		},
+		{
+			"key": "Password",
+			"value": "aaaaaa"
+		}
+	]
+}
